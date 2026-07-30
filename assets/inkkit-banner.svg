@@ -1,0 +1,44 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="inkkit — shared device HAL for freeink-sdk e-ink firmware">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6edf3"/>
+      <stop offset="1" stop-color="#adb7c0"/>
+    </linearGradient>
+    <radialGradient id="drop" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#58a6ff"/>
+      <stop offset="1" stop-color="#1f6feb"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="360" rx="24" fill="url(#bg)"/>
+
+  <!-- faint 1-bit e-ink pixel grid, evoking the framebuffer -->
+  <g opacity="0.06" fill="#ffffff">
+    <rect x="60" y="60" width="1160" height="240"/>
+  </g>
+  <g opacity="0.10" stroke="#ffffff" stroke-width="1">
+    <path d="M60 108 H1220 M60 156 H1220 M60 204 H1220 M60 252 H1220"/>
+    <path d="M156 60 V300 M252 60 V300 M348 60 V300 M444 60 V300 M540 60 V300 M636 60 V300 M732 60 V300 M828 60 V300 M924 60 V300 M1020 60 V300 M1116 60 V300"/>
+  </g>
+
+  <!-- ink drop mark -->
+  <g transform="translate(150 180)">
+    <path d="M0 -74 C 40 -20, 60 6, 60 34 A 60 60 0 1 1 -60 34 C -60 6, -40 -20, 0 -74 Z" fill="url(#drop)"/>
+    <circle cx="-18" cy="30" r="16" fill="#ffffff" opacity="0.85"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="250" y="196" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="112" font-weight="800" fill="url(#ink)" letter-spacing="-2">inkkit</text>
+  <text x="256" y="250" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="500" fill="#8b949e">Shared device HAL for freeink-sdk e-ink firmware · ESP32-C3</text>
+
+  <!-- chip glyph -->
+  <g transform="translate(1050 118)" stroke="#30363d" stroke-width="3" fill="none">
+    <rect x="0" y="0" width="120" height="120" rx="10" fill="#0d1117"/>
+    <rect x="24" y="24" width="72" height="72" rx="6" fill="#161b22" stroke="#58a6ff"/>
+    <path d="M40 0 V-16 M60 0 V-16 M80 0 V-16 M40 120 V136 M60 120 V136 M80 120 V136 M0 40 H-16 M0 60 H-16 M0 80 H-16 M120 40 H136 M120 60 H136 M120 80 H136" stroke="#8b949e"/>
+  </g>
+</svg>
