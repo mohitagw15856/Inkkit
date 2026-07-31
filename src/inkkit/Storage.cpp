@@ -1,6 +1,6 @@
 #include "inkkit/Storage.h"
 
-// Device-only translation unit; the SDK Storage singleton exists only on target.
+// Device-only translation unit; the Storage singleton exists only on target.
 #ifdef ARDUINO
 
 #include <cstddef>
@@ -11,10 +11,8 @@ namespace sd {
 bool exists(const char* path) { return Storage.exists(path); }
 
 bool ensureDir(const char* path) {
-  // ensureDirectoryExists creates the directory (and, on the ecosystem SDK,
-  // any missing parents) and is a no-op when it already exists.
-  // TODO(hardware-test): confirm ensureDirectoryExists creates parents; if not,
-  // fall back to walking the path and mkdir-ing each segment.
+  // ensureDirectoryExists delegates to the SD layer's mkdir with parent
+  // creation enabled, and is a no-op when the directory already exists.
   Storage.ensureDirectoryExists(path);
   return Storage.exists(path);
 }
@@ -28,8 +26,8 @@ bool openWrite(const char* tag, const char* path, HalFile& out) {
 }
 
 HalFile openAppend(const char* path) {
-  // TODO(hardware-test): confirm these open flags append rather than truncate on
-  // the pinned SDK.
+  // SdFat semantics: O_APPEND positions every write at end of file; O_CREAT
+  // creates the file when absent. Existing content is preserved.
   return Storage.open(path, O_WRONLY | O_CREAT | O_APPEND);
 }
 
@@ -48,23 +46,32 @@ void listFiles(const char* dir, const char* ext,
                const std::function<void(const std::string&)>& cb) {
   if (!Storage.exists(dir)) return;
 
+  HalFile d = Storage.open(dir, O_RDONLY);
+  if (!d || !d.isDirectory()) return;
+
   const std::string base(dir);
   const std::string suffix = ext ? std::string(ext) : std::string();
 
-  // TODO(hardware-test): the FreeInk SDK exposes directory iteration through
-  // HalStorage; the exact iterator type/method (openDir/next, or this callback
-  // form) must be confirmed against the installed SDK version.
-  Storage.listDir(dir, [&](const char* name, bool isDir, size_t /*size*/) {
-    if (isDir) return;
+  d.rewindDirectory();
+  while (true) {
+    HalFile entry = d.openNextFile();
+    if (!entry.isOpen()) break;
+    if (entry.isDirectory()) continue;
+
+    // 128 bytes covers SdFat long filenames in this ecosystem's on-card
+    // layouts while staying inside the stack budget.
+    char name[128];
+    if (entry.getName(name, sizeof(name)) == 0) continue;
+
     const std::string n(name);
     if (!suffix.empty()) {
       if (n.size() <= suffix.size() ||
           n.compare(n.size() - suffix.size(), suffix.size(), suffix) != 0) {
-        return;
+        continue;
       }
     }
     cb(base + "/" + n);
-  });
+  }
 }
 
 }  // namespace sd
