@@ -18,6 +18,7 @@ Vendored at commit `d0b70b3f9f8120df145a081028ef2ed2b4a49a30` (develop).
 | `src/HalGPIO.h`, `src/vendor/hal/HalGPIO.cpp` | `lib/hal/` |
 | `src/HalStorage.h`, `src/vendor/hal/HalStorage.cpp` | `lib/hal/` |
 | `src/HalPowerManager.h`, `src/vendor/hal/HalPowerManager.cpp` | `lib/hal/` |
+| `src/HalClock.h`, `src/vendor/hal/HalClock.cpp` | `lib/hal/` |
 | `src/Logging.h`, `src/vendor/Logging/Logging.cpp` | `lib/Logging/` |
 
 ## FreeInk SDK (MIT)
@@ -33,6 +34,7 @@ Vendored at commit `2da0700b8dc7f34a564d96cf73eac9b81bb330e0` (main).
 | `src/PowerManager.h`, `src/vendor/PowerManager/` | `libs/hardware/PowerManager/` |
 | `src/BatteryMonitor.h`, `src/vendor/BatteryMonitor/` | `libs/hardware/BatteryMonitor/` |
 | `src/XteinkDetect.h`, `src/vendor/XteinkDetect/` | `libs/hardware/XteinkDetect/` |
+| `src/Rtc.h`, `src/vendor/Rtc/` | `libs/hardware/Rtc/` |
 | `src/BoardConfig.h`, `src/M5Pm1.h` | `libs/hardware/BoardConfig/` |
 | `inject_build_flags.py` | `libs/hardware/SDCardManager/inject_build_flags.py` (extended) |
 
