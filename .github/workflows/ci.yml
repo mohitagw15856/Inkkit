@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  build:
+    name: Build minimal example (X4, X3, stub)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('examples/minimal/platformio.ini') }}
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      # Environments build one at a time: pio package installs are not safe to
+      # run concurrently against a shared ~/.platformio.
+      - name: Build X4 firmware
+        working-directory: examples/minimal
+        run: pio run -e xteink_x4
+
+      - name: Build X3 firmware
+        working-directory: examples/minimal
+        run: pio run -e xteink_x3
+
+      - name: Build INKKIT_HAL_STUB firmware
+        working-directory: examples/minimal
+        run: pio run -e stub
+
+      - name: Upload X4 binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: inkkit-minimal-xteink_x4
+          path: examples/minimal/.pio/build/xteink_x4/firmware.bin
+
+      - name: Upload X3 binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: inkkit-minimal-xteink_x3
+          path: examples/minimal/.pio/build/xteink_x3/firmware.bin

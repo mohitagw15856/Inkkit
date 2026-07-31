@@ -45,7 +45,10 @@ It was extracted from two shipping firmwares — [InkCards](https://github.com/m
 - **🪶 Thin & header-first.** Mostly inline headers with a single `.cpp`. No framework, no runtime, no allocations you didn't ask for.
 - **💉 Dependency-injected.** Wrappers take the SDK singleton by reference (`Buttons(gpio)`, `Display(display)`), so each app keeps its own logical button map, on-disk paths and serialization on top.
 - **🧪 Host-friendly.** Every SDK-touching line is guarded by `#ifdef ARDUINO`; the portable `ByteReader`/`ByteWriter` interfaces compile on the host, so pulling inkkit into a native/CI build costs nothing.
-- **📦 Drop-in PlatformIO.** One `lib_deps` line. inkkit does **not** vendor the SDK — your firmware supplies it — so there's no version fight.
+- **📦 Drop-in PlatformIO.** One `lib_deps` line, nothing else. inkkit **vendors** the device layer it wraps: the `Hal*` layer (adapted from CrossPoint Reader, MIT) plus the FreeInk SDK hardware libraries (MIT) it needs. See `THIRD_PARTY.md` for exact provenance.
+- **🩹 Hardware-free stub.** Build with `-DINKKIT_HAL_STUB` and the same wrapper API compiles and links against inert stand-ins: no SPI, no SD, no panel. Useful for CI-style smoke builds of app firmware.
+
+> **Status: builds in CI, not yet verified on device.** Everything hardware-facing carries `TODO(hardware-test)` markers.
 
 ---
 
@@ -54,14 +57,20 @@ It was extracted from two shipping firmwares — [InkCards](https://github.com/m
 Add inkkit to the **device / on-hardware** PlatformIO environment (leave your host/CI env untouched — it doesn't build the device layer):
 
 ```ini
-[env:device]           ; or [env:xteink]
-platform = espressif32
+[env:xteink_x4]        ; and an identical [env:xteink_x3]
+platform = https://github.com/pioarduino/platform-espressif32/releases/download/55.03.37/platform-espressif32.zip
 board = esp32-c3-devkitm-1
 framework = arduino
+build_flags =
+  -std=gnu++2a
+  -DEINK_DISPLAY_SINGLE_BUFFER_MODE=1
+  -DFREEINK_DEVICE_X4=1
+  -DFREEINK_DEVICE_X3=1
 lib_deps =
-  https://github.com/mohitagw15856/inkkit.git
-  ; ...your freeink-sdk hardware libraries...
+  https://github.com/mohitagw15856/inkkit.git#v0.1.0-rc1
 ```
+
+The `FREEINK_DEVICE` flags are set together: one binary serves both devices (the vendored HAL detects X4 vs X3 at runtime). See `examples/minimal/` for a complete buildable project.
 
 Then include what you need and wire it to your SDK singletons:
 
@@ -189,7 +198,7 @@ The Xteink X4 and X3 e-ink devices, which use an **ESP32-C3** under the **Arduin
 <details>
 <summary><strong>Does inkkit include the freeink-sdk?</strong></summary>
 
-No. inkkit references the SDK's headers (`HalStorage.h`, `HalGPIO.h`, `HalDisplay.h`, `HalPowerManager.h`) but the consuming firmware supplies the SDK through its own submodule or `lib_deps`. This keeps inkkit free of SDK-version lock-in.
+Yes, since v0.1.0-rc1. inkkit vendors the `Hal*` layer (adapted from CrossPoint Reader, MIT) and the FreeInk SDK hardware libraries it wraps (FreeInkDisplay, SDCardManager, InputManager, PowerManager, BatteryMonitor, XteinkDetect, BoardConfig — all MIT), so one pinned `lib_deps` line is the whole device layer. Provenance and upstream commits are recorded in `THIRD_PARTY.md`. The only registry dependency is `greiman/SdFat`.
 </details>
 
 <details>
@@ -201,7 +210,7 @@ No. Every SDK-touching line is wrapped in `#ifdef ARDUINO`, so on a native/host 
 <details>
 <summary><strong>How do I install inkkit in PlatformIO?</strong></summary>
 
-Add `https://github.com/mohitagw15856/inkkit.git` to the `lib_deps` of your device environment in `platformio.ini`. See <a href="#-quick-start">Quick start</a>.
+Add `https://github.com/mohitagw15856/inkkit.git#v0.1.0-rc1` (always pin a tag) to the `lib_deps` of your device environment in `platformio.ini`. See <a href="#-quick-start">Quick start</a>.
 </details>
 
 <details>
@@ -213,7 +222,7 @@ The freeink-sdk is the low-level hardware driver layer. inkkit sits one level up
 <details>
 <summary><strong>Is inkkit production-ready?</strong></summary>
 
-inkkit is `0.1.0`. The SDK method and enum names are modelled on the ecosystem API and are marked `TODO(hardware-test)` where they still need confirmation on real hardware. It's used by two apps and designed for easy on-device verification in one place.
+inkkit is `0.1.0-rc1`. The wrapper API is verified against the vendored device layer at compile time and builds in CI for both Xteink targets, but nothing has been run on physical hardware yet: hardware-facing behaviour carries `TODO(hardware-test)` markers, tracked in the "Hardware verification pending" issue. It's used by four apps and designed for easy on-device verification in one place.
 </details>
 
 ---

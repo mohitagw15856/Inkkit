@@ -1,0 +1,8 @@
+# PlatformIO
+.pio/
+.cache/
+platformio.local.ini
+
+# Editors and OS
+.vscode/
+.DS_Store
