@@ -7,14 +7,18 @@
 // SDK convention: a single 1-bit framebuffer (e.g. 800x480, 100-byte stride);
 // set bit = white, cleared bit = black.
 //
-// TODO(hardware-test): the HalDisplay method and constant names below are
-// modelled on the ecosystem SDK and must be verified against the pinned
-// freeink-sdk.
+// The HalDisplay API below is the real vendored layer (src/HalDisplay.h,
+// adapted from CrossPoint Reader); names are verified against that code.
+// TODO(hardware-test): behaviour on a physical panel is still unverified.
 #pragma once
 
 #ifdef ARDUINO
 
+#if defined(INKKIT_HAL_STUB)
+#include "inkkit/StubHal.h"
+#else
 #include <HalDisplay.h>
+#endif
 
 #include <cstdint>
 

@@ -3,17 +3,23 @@
 // home for the raw HalFile read/write/seek calls the firmwares used to each
 // re-derive (InkCards' SdByteStream, HabitInk's FreeInkStore::readLog).
 //
-// TODO(hardware-test): the HalFile method names (size/seekSet/position/read/
-// write) are modelled on the ecosystem SDK API and must be confirmed against
-// the pinned freeink-sdk on device. If a method differs, only this file needs
-// updating and both apps inherit the fix.
+// The HalFile method names (size/seekSet/position/read/write) match the real
+// vendored layer (src/HalStorage.h, adapted from CrossPoint Reader). If a
+// method changes upstream, only this file needs updating and every app
+// inherits the fix.
+// TODO(hardware-test): behaviour against a physical SD card is still
+// unverified.
 #pragma once
 
 #include "inkkit/ByteStream.h"
 
 #ifdef ARDUINO
 
+#if defined(INKKIT_HAL_STUB)
+#include "inkkit/StubHal.h"
+#else
 #include <HalStorage.h>
+#endif
 
 #include <functional>
 #include <string>

@@ -4,14 +4,20 @@
 // copies of these idioms (InkCards' InkCardsStorage, HabitInk's FreeInkStore);
 // they now share this single implementation.
 //
-// TODO(hardware-test): the Storage / HalFile API surface used here is modelled
-// on the ecosystem SDK and must be confirmed against the pinned freeink-sdk on
-// device (directory iteration in particular). See each app's HARDWARE_TESTING.md.
+// The Storage / HalFile API surface used here is the real vendored layer
+// (src/HalStorage.h, adapted from CrossPoint Reader); names are verified
+// against that code.
+// TODO(hardware-test): behaviour against a physical SD card is still
+// unverified. See each app's HARDWARE_TESTING.md.
 #pragma once
 
 #ifdef ARDUINO
 
+#if defined(INKKIT_HAL_STUB)
+#include "inkkit/StubHal.h"
+#else
 #include <HalStorage.h>
+#endif
 
 #include <functional>
 #include <string>

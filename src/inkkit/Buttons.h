@@ -3,15 +3,20 @@
 // own logical button map (InkCards' Btn, HabitInk's AppButton); inkkit owns only
 // the raw SDK plumbing both used to duplicate.
 //
-// TODO(hardware-test): the HalGPIO method and enum names below are modelled on
-// the ecosystem SDK and must be verified against the pinned freeink-sdk.
+// The HalGPIO API below is the real vendored layer (src/HalGPIO.h, adapted
+// from CrossPoint Reader); names are verified against that code.
+// TODO(hardware-test): behaviour on physical buttons is still unverified.
 #pragma once
 
 #include <cstdint>
 
 #ifdef ARDUINO
 
+#if defined(INKKIT_HAL_STUB)
+#include "inkkit/StubHal.h"
+#else
 #include <HalGPIO.h>
+#endif
 
 namespace inkkit {
 

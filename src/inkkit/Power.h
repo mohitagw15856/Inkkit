@@ -2,9 +2,10 @@
 // deep sleep. Deep sleep parks the panel and hands off to the SDK power manager,
 // which does not return until the next wake.
 //
-// TODO(hardware-test): the millis source and the powerManager.startDeepSleep
-// entry point are modelled on the ecosystem SDK and must be verified against the
-// pinned freeink-sdk.
+// The startDeepSleep entry point is the real vendored layer (src/
+// HalPowerManager.h, adapted from CrossPoint Reader); names are verified
+// against that code.
+// TODO(hardware-test): sleep current and wake behaviour are still unverified.
 #pragma once
 
 #include <cstdint>
@@ -12,9 +13,14 @@
 #ifdef ARDUINO
 
 #include <Arduino.h>
+
+#if defined(INKKIT_HAL_STUB)
+#include "inkkit/StubHal.h"
+#else
 #include <HalDisplay.h>
 #include <HalGPIO.h>
 #include <HalPowerManager.h>
+#endif
 
 namespace inkkit {
 
